@@ -1,6 +1,7 @@
 import { type AppType } from "next/app";
 import Head from "next/head";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "~/components/theme-provider";
 
 import { api } from "~/utils/api";
 
@@ -35,7 +36,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <meta name="twitter:domain" content="app.getcoveredandsave.com" />
       </Head>
       <ClerkProvider>
-        <Component {...pageProps} />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Component {...pageProps} />
+        </ThemeProvider>
       </ClerkProvider>
     </>
   );
