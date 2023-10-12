@@ -11,29 +11,38 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>Furshare</title>
+        <title>{process.env.NEXT_PUBLIC_APP_NAME}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
         <meta
           name="description"
-          content="Save money on your health insurance today!"
+          content={process.env.NEXT_PUBLIC_APP_DESCRIPTION}
         />
         <link rel="icon" href="/favicon.ico" />
-        <meta property="og:title" content="Vincent" />
-        <meta property="og:description" content="Vincent" />
+        <meta property="og:title" content={process.env.NEXT_PUBLIC_APP_NAME} />
+        <meta
+          property="og:description"
+          content={process.env.NEXT_PUBLIC_APP_NAME}
+        />
         <meta property="og:image" content="/og.png" />
-        <meta property="og:url" content="https://app.getcoveredandsave.com" />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@vincent" />
-        <meta name="twitter:creator" content="@vincent" />
-        <meta name="twitter:title" content="Vincent" />
+        <meta
+          name="twitter:site"
+          content={`@${process.env.NEXT_PUBLIC_TWITTER_HANDLE}`}
+        />
+        <meta
+          name="twitter:creator"
+          content={`@${process.env.NEXT_PUBLIC_TWITTER_HANDLE}`}
+        />
+        <meta name="twitter:title" content={process.env.NEXT_PUBLIC_APP_NAME} />
         <meta
           name="twitter:description"
-          content="Save money on your health insurance today!"
+          content={process.env.NEXT_PUBLIC_APP_DESCRIPTION}
         />
         <meta name="twitter:image" content="/og.png" />
-        <meta name="twitter:url" content="https://app.getcoveredandsave.com" />
-        <meta name="twitter:domain" content="app.getcoveredandsave.com" />
+        <meta name="twitter:url" content={process.env.NEXT_PUBLIC_APP_URL} />
+        <meta name="twitter:domain" content={process.env.NEXT_PUBLIC_APP_URL} />
       </Head>
       <ClerkProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

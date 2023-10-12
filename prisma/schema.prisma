@@ -11,7 +11,76 @@ datasource db {
     relationMode = "prisma"
 }
 
+enum Role {
+    OWNER
+    ADMIN
+    USER
+}
+
 model User {
-    id       String @id @default(uuid())
-    username String
+    id               String             @id @default(uuid())
+    isBanned         Boolean            @default(false)
+    bannedById       String?
+    isSuspened       Boolean            @default(false)
+    suspendedAt      DateTime?
+    suspendedReason  String?
+    suspendedUntil   DateTime?
+    bannedAt         DateTime?
+    bannedReason     String?
+    streamerMode     Boolean            @default(false)
+    role             Role               @default(USER)
+    isVerified       Boolean            @default(false)
+    lastLogin        DateTime           @default(now())
+    lastUpload       DateTime           @default(now())
+    createdAt        DateTime           @default(now())
+    updatedAt        DateTime           @updatedAt
+    Upload           Upload[]
+    IntergationToken IntergationToken[]
+
+    @@index([isBanned], name: "isBanned")
+    @@index([isSuspened], name: "isSuspened")
+}
+
+model Upload {
+    id            String      @id @default(uuid())
+    uploader      User        @relation(fields: [uploaderId], references: [id])
+    uploaderId    String
+    name          String
+    fileName      String
+    fileExtension String
+    fileSize      Int         @default(0) // in bytes
+    fileHash      String
+    fileType      String
+    fileUrl       String
+    deleteToken   String      @default(uuid())
+    tags          UploadTag[]
+
+    @@index([uploaderId], name: "uploaderId")
+    @@index([name], name: "name")
+    @@index([fileName], name: "fileName")
+}
+
+model UploadTag {
+    id     String   @id @default(uuid())
+    name   String   @unique
+    color  String?
+    icon   String?
+    upload Upload[]
+}
+
+model IntergationToken {
+    id        String    @id @default(uuid())
+    tokenHash String
+    label     String    @default("Intergation Token")
+    lastUsed  DateTime?
+    expiresAt DateTime?
+    isNever   Boolean   @default(true) // aka never expires
+    isRevoked Boolean   @default(false)
+    user      User      @relation(fields: [userId], references: [id])
+    userId    String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    @@index([tokenHash], name: "tokenHash")
+    @@index([userId], name: "userId")
 }

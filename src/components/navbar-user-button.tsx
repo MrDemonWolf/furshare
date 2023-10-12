@@ -4,11 +4,10 @@ import { dark } from "@clerk/themes";
 import { useTheme } from "next-themes";
 
 export default function NavbarUserButton() {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   return (
     <>
-      {theme === "dark" && (
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      {resolvedTheme === "dark" && (
         <UserButton
           appearance={{
             baseTheme: dark,
@@ -18,7 +17,7 @@ export default function NavbarUserButton() {
           }}
         />
       )}
-      {theme !== "dark" && <UserButton />}
+      {resolvedTheme !== "dark" && <UserButton />}
     </>
   );
 }
