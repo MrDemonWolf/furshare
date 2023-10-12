@@ -32,10 +32,10 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string().min(1),
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string(),
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string(),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string(),
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1),
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().min(1),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
   },
 
   /**
