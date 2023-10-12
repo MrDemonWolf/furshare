@@ -32,6 +32,7 @@ model User {
     isVerified       Boolean            @default(false)
     lastLogin        DateTime           @default(now())
     lastUpload       DateTime           @default(now())
+    theme            String             @default("system")
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
     Upload           Upload[]

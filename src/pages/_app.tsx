@@ -44,7 +44,16 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <meta name="twitter:url" content={process.env.NEXT_PUBLIC_APP_URL} />
         <meta name="twitter:domain" content={process.env.NEXT_PUBLIC_APP_URL} />
       </Head>
-      <ClerkProvider>
+      <ClerkProvider
+        appearance={{
+          elements: {
+            footer:
+              process.env.NEXT_PUBLIC_SIGN_UP_ENABLED !== "true"
+                ? "hidden"
+                : "show",
+          },
+        }}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Component {...pageProps} />
         </ThemeProvider>
