@@ -36,7 +36,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().min(1),
-    NEXT_PUBLIC_APP_SIGNUPS_ENABLED: z.boolean().default(true),
+    NEXT_PUBLIC_APP_SIGNUPS_ENABLED: z.string().min(1),
+    NEXT_PUBLIC_APP_SHOW_GITUHB_LINK: z.string().min(1),
   },
 
   /**
@@ -58,9 +59,11 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
       process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     CLERK_WEBHOOK_SIGNING_SECRET: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
-    NEXT_PUBLIC_APP_URL: process.env.VERCEL_URL,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_APP_SIGNUPS_ENABLED:
       process.env.NEXT_PUBLIC_APP_SIGNUPS_ENABLED,
+    NEXT_PUBLIC_APP_SHOW_GITUHB_LINK:
+      process.env.NEXT_PUBLIC_APP_SHOW_GITUHB_LINK,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
