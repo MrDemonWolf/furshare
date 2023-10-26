@@ -3,48 +3,14 @@ import Image from "next/image";
 
 import { useAuth } from "@clerk/nextjs";
 
-import NavbarUserButton from "~/components/navbar-user-button";
-import { ThemeToggle } from "../theme-toggle";
+import Header from "@/components/landing/header";
 
-export default function Landing() {
+export default function SignUpEnabled() {
   const { isLoaded, isSignedIn } = useAuth();
   return (
     <>
       <main className="min-h-screen bg-white dark:bg-gray-900">
-        <header className="absolute inset-x-0 top-0 z-50">
-          <nav
-            className="flex items-center justify-between p-6 lg:px-8"
-            aria-label="Global"
-          >
-            <div className="items-cet flex flex-1 items-center">
-              {/* @DevBowser was here */}
-              <a href="#" className="-m-1.5 p-1.5">
-                <Image
-                  className="h-8 w-auto"
-                  src="/img/logo.png"
-                  alt="Furshare Logo"
-                  width={32}
-                  height={32}
-                />
-              </a>
-            </div>
-
-            <div className=" flex flex-1 items-center justify-end">
-              <ThemeToggle />
-              {!isLoaded ||
-                (!isSignedIn && (
-                  <Link
-                    href="/sign-in"
-                    className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
-                  >
-                    Log in <span aria-hidden="true">&rarr;</span>
-                  </Link>
-                ))}
-              {isSignedIn && <NavbarUserButton />}
-            </div>
-          </nav>
-        </header>
-
+        <Header />
         <div className="relative isolate pt-14">
           <div
             className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -86,13 +52,15 @@ export default function Landing() {
                     </Link>
                   )}
 
-                  <Link
-                    href="https://www.github.com/mrdemonwolf/furshare"
-                    target="_blank"
-                    className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
-                  >
-                    Learn more <span aria-hidden="true">→</span>
-                  </Link>
+                  {process.env.NEXT_PUBLIC_SHOW_GITUHB_LINK === "true" && (
+                    <Link
+                      href="https://www.github.com/mrdemonwolf/furshare"
+                      target="_blank"
+                      className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                    >
+                      Check Github Repo <span aria-hidden="true">→</span>
+                    </Link>
+                  )}
                 </div>
               </div>
               <Image

@@ -1,49 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 
 import { useAuth } from "@clerk/nextjs";
 
-import NavbarUserButton from "~/components/navbar-user-button";
-import { ThemeToggle } from "../theme-toggle";
+import Header from "@/components/landing/header";
 
-export default function Landing() {
+export default function Disabled() {
   const { isLoaded, isSignedIn } = useAuth();
   return (
     <>
       <main className="min-h-screen bg-white dark:bg-gray-900">
-        <header className="absolute inset-x-0 top-0 z-50">
-          <nav
-            className="flex items-center justify-between p-6 lg:px-8"
-            aria-label="Global"
-          >
-            <div className="items-cet flex flex-1 items-center">
-              {/* @DevBowser was here */}
-              <a href="#" className="-m-1.5 p-1.5">
-                <Image
-                  className="h-8 w-auto"
-                  src="/img/logo.png"
-                  alt="Furshare Logo"
-                  width={32}
-                  height={32}
-                />
-              </a>
-            </div>
-
-            <div className=" flex flex-1 items-center justify-end">
-              <ThemeToggle />
-              {!isLoaded ||
-                (!isSignedIn && (
-                  <Link
-                    href="/sign-in"
-                    className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
-                  >
-                    Log in <span aria-hidden="true">&rarr;</span>
-                  </Link>
-                ))}
-              {isSignedIn && <NavbarUserButton />}
-            </div>
-          </nav>
-        </header>
+        <Header />
 
         <div className="relative isolate pt-14">
           <div
@@ -69,6 +35,35 @@ export default function Landing() {
                   {process.env.NEXT_PUBLIC_APP_NAME} has decided disable new
                   sign ups site.
                 </p>
+                <div className="mt-10 flex items-center justify-center gap-x-6">
+                  {!isLoaded ||
+                    (!isSignedIn && (
+                      <Link
+                        href="/sign-in"
+                        className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+                      >
+                        Login
+                      </Link>
+                    ))}
+                  {isSignedIn && (
+                    <Link
+                      href="/app"
+                      className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+                    >
+                      Go to App
+                    </Link>
+                  )}
+
+                  {process.env.NEXT_PUBLIC_SHOW_GITUHB_LINK === "true" && (
+                    <Link
+                      href="https://www.github.com/mrdemonwolf/furshare"
+                      target="_blank"
+                      className="text-sm font-semibold leading-6 text-gray-900 dark:text-white"
+                    >
+                      Check Github Repo <span aria-hidden="true">→</span>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@ import { authMiddleware } from "@clerk/nextjs";
 export default authMiddleware({
   // "/" will be accessible to all users
   // "/api/trpc/posts.getAll" will be accessible to all users
-  publicRoutes: ["/"],
+  publicRoutes: ["/", "/api/3rd-party(.*)"],
 });
 
 export const config = {
