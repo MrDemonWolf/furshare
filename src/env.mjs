@@ -19,6 +19,12 @@ export const env = createEnv({
       .default("development"),
     CLERK_SECRET_KEY: z.string().min(1),
     CLERK_WEBHOOK_SIGNING_SECRET: z.string().min(1),
+    S3_ENDPOINT: z.string().min(1),
+    S3_BUCKET: z.string().min(1),
+    S3_REGION: z.string().min(1),
+    S3_ACCESS_KEY_ID: z.string().min(1),
+    S3_SECRET_ACCESS_KEY: z.string().min(1),
+    BUCKET_PUBLIC_URL: z.string().min(1),
   },
 
   /**
@@ -64,6 +70,12 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_APP_SIGNUPS_ENABLED,
     NEXT_PUBLIC_APP_SHOW_GITUHB_LINK:
       process.env.NEXT_PUBLIC_APP_SHOW_GITUHB_LINK,
+    S3_ENDPOINT: process.env.S3_ENDPOINT,
+    S3_BUCKET: process.env.S3_BUCKET,
+    S3_REGION: process.env.S3_REGION,
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+    BUCKET_PUBLIC_URL: process.env.BUCKET_PUBLIC_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

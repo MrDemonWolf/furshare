@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useTheme } from "next-themes";
 
-import AuthLayout from "~/components/layouts/auth";
+import AuthLayout from "@/components/layouts/auth";
 
 export default function SignInPage() {
   const { resolvedTheme } = useTheme();

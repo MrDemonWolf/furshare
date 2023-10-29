@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 
-export function ThemeToggle() {
+export default function ThemeToggle() {
   const { setTheme, theme } = useTheme();
 
   /** Create click toggle between light,dark, and system */
