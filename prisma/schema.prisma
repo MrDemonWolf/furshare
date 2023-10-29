@@ -37,6 +37,7 @@ model User {
     updatedAt        DateTime           @updatedAt
     Upload           Upload[]
     IntergationToken IntergationToken[]
+    ActionLog        ActionLog[]
 
     @@index([isBanned], name: "isBanned")
     @@index([isSuspened], name: "isSuspened")
@@ -50,7 +51,6 @@ model Upload {
     fileName      String
     fileExtension String
     fileSize      Int         @default(0) // in bytes
-    fileHash      String
     fileType      String
     fileUrl       String
     deleteToken   String      @default(uuid())
@@ -63,7 +63,7 @@ model Upload {
 
 model UploadTag {
     id     String   @id @default(uuid())
-    name   String   @unique
+    name   String
     color  String?
     icon   String?
     upload Upload[]
@@ -83,5 +83,16 @@ model IntergationToken {
     updatedAt DateTime? @updatedAt
 
     @@index([tokenHash], name: "tokenHash")
+    @@index([userId], name: "userId")
+}
+
+model ActionLog {
+    id        String   @id @default(uuid())
+    action    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@index([userId], name: "userId")
 }
