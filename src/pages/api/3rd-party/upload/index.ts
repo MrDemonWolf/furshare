@@ -47,15 +47,6 @@ async function uploadFile(
 }
 
 function POST(req: NextApiRequest, res: NextApiResponse) {
-  const response = {
-    message: "File uploaded successfully.",
-    data: {
-      name: "" as string,
-      tags: [] as string[],
-      url: "" as string,
-    },
-  };
-
   const form = new IncomingForm({
     keepExtensions: true,
     hashAlgorithm: "sha256",

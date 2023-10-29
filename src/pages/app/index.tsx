@@ -14,7 +14,7 @@ const navigation = [
   { name: "Openings", href: "#", current: false },
 ];
 
-function classNames(...classes: any[]) {
+function classNames(...classes: unknown[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -168,7 +168,7 @@ export default function AppPage() {
                         <div className="pb-2 pt-3">
                           <div className="flex items-center justify-between px-4">
                             <div>
-                              <img
+                              <Image
                                 className="h-8 w-auto"
                                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                                 alt="Your Company"
