@@ -10,10 +10,12 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "start": "next start"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.437.0",
+    "@clerk/clerk-sdk-node": "^4.12.18",
     "@clerk/nextjs": "^4.26.1",
     "@clerk/themes": "^1.7.9",
     "@headlessui/react": "^1.7.17",
@@ -22,6 +24,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@t3-oss/env-nextjs": "^0.6.1",
     "@tanstack/react-query": "^4.36.1",
+    "@tanstack/react-table": "^8.10.7",
     "@trpc/client": "^10.43.0",
     "@trpc/next": "^10.43.0",
     "@trpc/react-query": "^10.43.0",
@@ -41,6 +44,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "^1.13.3",
+    "svix": "^1.13.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",

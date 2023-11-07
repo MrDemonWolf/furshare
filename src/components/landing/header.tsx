@@ -3,8 +3,8 @@ import Image from "next/image";
 
 import { useAuth } from "@clerk/nextjs";
 
-import NavbarUserButton from "@/components/navbar-user-button";
-import ThemeToggle from "@/components/theme-toggle";
+import NavbarUserButton from "~/components/navbar/user-button";
+import ThemeToggle from "~/components/global/theme-toggle";
 
 export default function Landing() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -15,17 +15,20 @@ export default function Landing() {
           className="flex items-center justify-between p-6 lg:px-8"
           aria-label="Global"
         >
-          <div className="items-cet flex flex-1 items-center">
+          <div className="flex flex-1 items-center">
             {/* @DevBowser was here */}
             <a href="#" className="-m-1.5 p-1.5">
+              <span className="sr-only">
+                {process.env.NEXT_PUBLIC_APP_NAME}
+              </span>
               <Image
                 className="inline-block h-8 w-auto"
                 src="/img/logo.png"
-                alt="Furshare Logo"
+                alt={`${process.env.NEXT_PUBLIC_APP_NAME} Logo`}
                 width={32}
                 height={32}
               />
-              <span className="ml-3 text-xl font-bold">
+              <span className="ml-3 align-middle text-xl font-bold">
                 {process.env.NEXT_PUBLIC_APP_NAME}
               </span>
             </a>

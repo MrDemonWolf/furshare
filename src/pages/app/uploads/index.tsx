@@ -1,9 +1,6 @@
-import Stats from "@/components/app/stats";
-
 import AppLayout from "~/components/layouts/app";
-import UserActionLog from "@/components/app/action-log";
 
-export default function AppPage() {
+export default function UploadsPage() {
   return (
     <AppLayout>
       <main className="-mt-24 pb-8">
@@ -18,9 +15,7 @@ export default function AppPage() {
                   Stats
                 </h2>
                 <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700">
-                  <div className="p-6">
-                    <Stats />
-                  </div>
+                  <div className="p-6"></div>
                 </div>
               </section>
             </div>
@@ -34,7 +29,6 @@ export default function AppPage() {
                 <div className="overflow-hidden rounded-lg bg-white shadow">
                   <div className="p-6 text-black">
                     <h1 className="mb-4 text-2xl font-bold">Action Log</h1>
-                    <UserActionLog />
                   </div>
                 </div>
               </section>

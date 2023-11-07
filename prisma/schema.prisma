@@ -12,32 +12,63 @@ datasource db {
 }
 
 enum Role {
-    OWNER
-    ADMIN
-    USER
+    ADMIN     @map("ADMIN")
+    MODERATOR @map("MODERATOR")
+    USER      @map("USER")
+}
+
+enum Theme {
+    SYSTEM @map("SYSTEM")
+    LIGHT  @map("LIGHT")
+    DARK   @map("DARK")
+}
+
+enum FileType {
+    IMAGE @map("IMAGE")
+    TEXT  @map("TEXT")
+    OTHER @map("OTHER")
+}
+
+enum ActionLogType {
+    UPLOAD_CREATED              @map("UPLOAD_CREATED")
+    UPLOAD_DELETED              @map("UPLOAD_DELETED")
+    USER_BANNED                 @map("USER_BANNED")
+    USER_UNBANNED               @map("USER_UNBANNED")
+    USER_SUSPENDED              @map("USER_SUSPENDED")
+    USER_UNSUSPENDED            @map("USER_UNSUSPENDED")
+    USER_VERIFIED               @map("USER_VERIFIED")
+    USER_UNVERIFIED             @map("USER_UNVERIFIED")
+    USER_DELETION_REQUESTED     @map("USER_DELETION_REQUESTED")
+    USER_ROLE_CHANGED           @map("USER_ROLE_CHANGED")
+    USER_STREAMER_MODE_ENABLED  @map("USER_STREAMER_MODE_ENABLED")
+    USER_STREAMER_MODE_DISABLED @map("USER_STREAMER_MODE_DISABLED")
+    USER_THEME_CHANGED          @map("USER_THEME_CHANGED")
+    UNKNOWN                     @map("UNKNOWN")
 }
 
 model User {
-    id               String             @id @default(uuid())
-    isBanned         Boolean            @default(false)
-    bannedById       String?
-    isSuspened       Boolean            @default(false)
-    suspendedAt      DateTime?
-    suspendedReason  String?
-    suspendedUntil   DateTime?
-    bannedAt         DateTime?
-    bannedReason     String?
-    streamerMode     Boolean            @default(false)
-    role             Role               @default(USER)
-    isVerified       Boolean            @default(false)
-    lastLogin        DateTime           @default(now())
-    lastUpload       DateTime           @default(now())
-    theme            String             @default("system")
-    createdAt        DateTime           @default(now())
-    updatedAt        DateTime           @updatedAt
-    Upload           Upload[]
-    IntergationToken IntergationToken[]
-    ActionLog        ActionLog[]
+    id                String             @id @default(uuid())
+    displayName       String
+    theme             Theme              @default(SYSTEM)
+    isBanned          Boolean            @default(false)
+    bannedById        String?
+    isSuspened        Boolean            @default(false)
+    suspendedAt       DateTime?
+    suspendedReason   String?
+    suspendedUntil    DateTime?
+    bannedAt          DateTime?
+    bannedReason      String?
+    streamerMode      Boolean            @default(false)
+    role              Role               @default(USER)
+    lastLogin         DateTime           @default(now())
+    lastUpload        DateTime           @default(now())
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt
+    Upload            Upload[]
+    IntergationToken  IntergationToken[]
+    ActionLog         ActionLog[]
+    pendingDeletion   Boolean            @default(false)
+    pendingDeletionAt DateTime?
 
     @@index([isBanned], name: "isBanned")
     @@index([isSuspened], name: "isSuspened")
@@ -51,9 +82,9 @@ model Upload {
     fileName      String
     fileExtension String
     fileSize      Int         @default(0) // in bytes
-    fileType      String
+    fileType      FileType    @default(OTHER)
     fileUrl       String
-    deleteToken   String      @default(uuid())
+    deleteToken   String
     tags          UploadTag[]
 
     @@index([uploaderId], name: "uploaderId")
@@ -87,12 +118,12 @@ model IntergationToken {
 }
 
 model ActionLog {
-    id        String   @id @default(uuid())
-    action    String
-    user      User     @relation(fields: [userId], references: [id])
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id          String        @id @default(uuid())
+    type        ActionLogType @default(UNKNOWN)
+    description String
+    user        User          @relation(fields: [userId], references: [id])
+    userId      String
+    createdAt   DateTime      @default(now())
 
     @@index([userId], name: "userId")
 }

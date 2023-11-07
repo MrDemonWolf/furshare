@@ -80,7 +80,7 @@ export const publicProcedure = t.procedure;
 
 /**
  * Private (authenticated) procedure
- * 
+ *
  * This is the base piece you use to build new queries and mutations on your tRPC API. It guarantees
  * that a user querying is authorized, and you can access user session data.
  */
@@ -97,4 +97,43 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const enforceUserIsAdminPlus = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  const user = await ctx.db.user.findUnique({
+    where: {
+      id: ctx.userId,
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  console.log(user);
+
+  if (!user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  if (user.role === "USER") {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  return next({
+    ctx: {
+      userId: ctx.userId,
+    },
+  });
+});
+
 export const privateProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const adminPlusProcedure = t.procedure.use(enforceUserIsAdminPlus);

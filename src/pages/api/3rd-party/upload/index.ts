@@ -6,6 +6,7 @@ import { customAlphabet } from "nanoid";
 
 import { env } from "../../../../env.mjs";
 
+import type { FileType } from "@prisma/client";
 import { db } from "../../../../server/db";
 
 /**
@@ -18,7 +19,7 @@ export const config = {
   },
 };
 
-export const urlFriendyAlphabet =
+const urlFriendyAlphabet =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 /**
  * Create a new S3 client
@@ -159,7 +160,7 @@ async function addFileInfomationToDB(
       name,
       fileName,
       fileExtension,
-      fileType,
+      fileType: fileType as FileType,
       fileSize,
       fileUrl,
       deleteToken,
@@ -177,12 +178,10 @@ async function addFileInfomationToDB(
  * @param res
  * @returns object with message and data with file name, tags, delete token, and file URL.
  */
-function POST(req: NextApiRequest, res: NextApiResponse) {
-  /**
+async function POST(req: NextApiRequest, res: NextApiResponse) {
+  /**fileType
    * Check header for API key
    */
-  console.log(req.headers.authorization);
-
   const form = new IncomingForm({
     keepExtensions: true,
     hashAlgorithm: "sha256",
@@ -246,7 +245,7 @@ function POST(req: NextApiRequest, res: NextApiResponse) {
         /**
          * Returns a 201 Created status code along with the file URL, name, and tags
          */
-        return res.status(201).json({
+        res.status(201).json({
           error: false,
           message: "File uploaded successfully.",
           data,
@@ -261,14 +260,23 @@ function POST(req: NextApiRequest, res: NextApiResponse) {
         });
       });
   });
-  return;
+  await db.actionLog.create({
+    data: {
+      type: "UPLOAD_CREATED",
+      description: "File has been uploaded by",
+      userId: "test",
+    },
+  });
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     switch (req.method) {
       case "POST":
-        POST(req, res);
+        await POST(req, res);
         break;
       default:
         res.status(405).json({
