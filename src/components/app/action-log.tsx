@@ -30,7 +30,7 @@ export default function UserActionLog() {
                   ) : null}
                   <div className="relative flex space-x-3">
                     <div>
-                      {action.type === "upload_created" && (
+                      {action.type === "UPLOAD_CREATED" && (
                         <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-white">
                           <ArrowUpTrayIcon
                             className="text-gray-900"
