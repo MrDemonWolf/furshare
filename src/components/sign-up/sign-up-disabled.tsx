@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 
+import { env } from "~/env.mjs";
+
 export default function SignUpDisabled() {
   const { isLoaded, isSignedIn } = useAuth();
 
@@ -9,12 +11,11 @@ export default function SignUpDisabled() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-            Welcome to {process.env.NEXT_PUBLIC_APP_NAME}
+            Welcome to {env.NEXT_PUBLIC_APP_NAME}
           </h1>
           <p className="mt-6 text-lg leading-8  text-gray-600 dark:text-gray-300">
             We appologize for the inconvenience, but the owner of {""}
-            {process.env.NEXT_PUBLIC_APP_NAME} has decided disable new sign ups
-            site.
+            {env.NEXT_PUBLIC_APP_NAME} has decided disable new sign ups site.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             {!isLoaded ||
@@ -35,7 +36,7 @@ export default function SignUpDisabled() {
               </Link>
             )}
 
-            {process.env.NEXT_PUBLIC_SHOW_GITUHB_LINK === "true" && (
+            {env.NEXT_PUBLIC_APP_SHOW_GITUHB_LINK === "true" && (
               <Link
                 href="https://www.github.com/mrdemonwolf/furshare"
                 target="_blank"

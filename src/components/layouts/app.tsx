@@ -7,16 +7,18 @@ import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
-import NavbarUserButton from "~/components/navbar/user-button";
-
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 
 dayjs.extend(LocalizedFormat);
+
+import NavbarUserButton from "~/components/navbar/user-button";
+import { env } from "~/env.mjs";
+
 const navigation = [
   { name: "Home", href: "/app" },
   { name: "Uploads", href: "/app/uploads" },
-  { name: "Intergations", href: "/app/intergation" },
+  { name: "Intergations", href: "/app/intergations" },
 ];
 
 function classNames(...classes: unknown[]) {
@@ -41,17 +43,17 @@ export default function AppLayout(props: PropsWithChildren) {
                   <div className="absolute left-0 flex-shrink-0 lg:static">
                     <Link href="/app">
                       <span className="sr-only">
-                        {process.env.NEXT_PUBLIC_APP_NAME}
+                        {env.NEXT_PUBLIC_APP_NAME}
                       </span>
                       <Image
                         className="inline-block h-8 w-auto"
                         src="/img/logo.png"
-                        alt={`${process.env.NEXT_PUBLIC_APP_NAME} Logo`}
+                        alt={`${env.NEXT_PUBLIC_APP_NAME} Logo`}
                         width={32}
                         height={32}
                       />
                       <span className="ml-3 hidden text-xl font-bold md:inline-block">
-                        {process.env.NEXT_PUBLIC_APP_NAME}
+                        {env.NEXT_PUBLIC_APP_NAME}
                       </span>
                     </Link>
                   </div>
@@ -188,7 +190,7 @@ export default function AppLayout(props: PropsWithChildren) {
                               <Image
                                 className="h-8 w-auto"
                                 src="/img/logo.png"
-                                alt={`${process.env.NEXT_PUBLIC_APP_NAME} Logo`}
+                                alt={`${env.NEXT_PUBLIC_APP_NAME} Logo`}
                                 width={32}
                                 height={32}
                               />
@@ -250,16 +252,15 @@ export default function AppLayout(props: PropsWithChildren) {
                 &copy; {new Date().getFullYear()}{" "}
                 <Link
                   href={
-                    process.env.NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY_LINK
-                      ? process.env
-                          .NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY_LINK
+                    env.NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY_LINK
+                      ? env.NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY_LINK
                       : "/"
                   }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-gray-400"
                 >
-                  {process.env.NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY}
+                  {env.NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY}
                 </Link>
               </span>{" "}
               <span className="block sm:inline">All rights reserved.</span>

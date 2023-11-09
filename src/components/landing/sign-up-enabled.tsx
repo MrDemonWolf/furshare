@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
 
 import Header from "@/components/landing/header";
+import { env } from "~/env.mjs";
 
 export default function SignUpEnabled() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -28,10 +29,10 @@ export default function SignUpEnabled() {
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto max-w-2xl text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                  Welcome to {process.env.NEXT_PUBLIC_APP_NAME}
+                  Welcome to {env.NEXT_PUBLIC_APP_NAME}
                 </h1>
                 <p className="mt-6 text-lg leading-8  text-gray-600 dark:text-gray-300">
-                  {process.env.NEXT_PUBLIC_APP_DESCRIPTION}
+                  {env.NEXT_PUBLIC_APP_DESCRIPTION}
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
                   {!isLoaded ||
@@ -52,7 +53,7 @@ export default function SignUpEnabled() {
                     </Link>
                   )}
 
-                  {process.env.NEXT_PUBLIC_SHOW_GITUHB_LINK === "true" && (
+                  {env.NEXT_PUBLIC_APP_SHOW_GITUHB_LINK === "true" && (
                     <Link
                       href="https://www.github.com/mrdemonwolf/furshare"
                       target="_blank"

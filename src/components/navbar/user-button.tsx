@@ -15,9 +15,10 @@ export default function NavbarUserButton() {
               baseTheme: dark,
             },
           }}
+          afterSignOutUrl="/"
         />
       )}
-      {resolvedTheme !== "dark" && <UserButton />}
+      {resolvedTheme !== "dark" && <UserButton afterSignOutUrl="/" />}
     </>
   );
 }

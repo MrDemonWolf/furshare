@@ -113,8 +113,6 @@ const enforceUserIsAdminPlus = t.middleware(async ({ ctx, next }) => {
     },
   });
 
-  console.log(user);
-
   if (!user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
