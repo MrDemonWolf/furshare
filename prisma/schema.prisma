@@ -75,29 +75,27 @@ model User {
 }
 
 model Upload {
-    id            String      @id @default(uuid())
-    uploader      User        @relation(fields: [uploaderId], references: [id])
-    uploaderId    String
-    name          String
-    fileName      String
-    fileExtension String
-    fileSize      Int         @default(0) // in bytes
-    fileType      FileType    @default(OTHER)
-    fileUrl       String
-    deleteToken   String
-    tags          UploadTag[]
+    id          String      @id @default(uuid())
+    name        String
+    fileSize    Int         @default(0) // in bytes
+    fileType    FileType    @default(OTHER)
+    fileUrl     String
+    tags        UploadTag[]
+    deleteToken String
+    uploader    User        @relation(fields: [uploaderId], references: [id])
+    uploaderId  String
 
     @@index([uploaderId], name: "uploaderId")
     @@index([name], name: "name")
-    @@index([fileName], name: "fileName")
 }
 
 model UploadTag {
-    id     String   @id @default(uuid())
-    name   String
-    color  String?
-    icon   String?
-    upload Upload[]
+    id       String @id @default(uuid())
+    name     String
+    upload   Upload @relation(fields: [uploadId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    uploadId String
+
+    @@index([uploadId])
 }
 
 model IntergationToken {

@@ -43,7 +43,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         appearance={{
           elements: {
             footer:
-              env.NEXT_PUBLIC_SIGN_UP_ENABLED !== "true" ? "hidden" : "show",
+              env.NEXT_PUBLIC_APP_SIGNUPS_ENABLED !== "true"
+                ? "hidden"
+                : "show",
           },
         }}
       >

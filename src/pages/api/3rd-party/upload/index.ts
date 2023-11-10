@@ -1,12 +1,20 @@
-import { IncomingForm } from "formidable";
+import type { FileType } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import * as path from "path";
+import { IncomingForm } from "formidable";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 import fs from "fs";
 import { customAlphabet } from "nanoid";
+import { TRPCError } from "@trpc/server";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 import { env } from "../../../../env.mjs";
 
-import type { FileType } from "@prisma/client";
 import { db } from "../../../../server/db";
 
 /**
@@ -35,7 +43,9 @@ const S3 = new S3Client({
 
 /**
  * Upload the file to S3 and add the file information to the database
- * @param fileName
+ * @param uploaderId
+ * @param name
+ * @param newFileName
  * @param fileSize
  * @param mimetype
  * @param tags
@@ -43,7 +53,8 @@ const S3 = new S3Client({
  * @returns file URL and file object
  */
 async function uploadFile(
-  fileName: string,
+  uploaderId: string,
+  name: string,
   newFileName: string,
   fileSize: number,
   mimetype: string | null,
@@ -54,22 +65,25 @@ async function uploadFile(
     const fileData = fs.readFileSync(filepath);
 
     /**
-     * Upload the file to S3
+     * Set the command to upload the file to S3
      */
     const command = new PutObjectCommand({
       Bucket: env.S3_BUCKET,
-      Key: newFileName,
+      Key: `${uploaderId}/${newFileName}`,
       Body: fileData,
       ContentType: mimetype ?? undefined,
       ContentDisposition: "inline filename=" + newFileName,
     });
 
+    /**
+     * Upload the file to S3
+     */
     await S3.send(command);
 
     /**
      * Generate the public URL for the file
      */
-    const fileUrl = `${env.BUCKET_PUBLIC_URL}/${newFileName}`;
+    const fileUrl = `${env.BUCKET_PUBLIC_URL}/${uploaderId}/${newFileName}`;
 
     /**
      * Delete the file from the local filesystem
@@ -83,95 +97,125 @@ async function uploadFile(
     const deleteToken = nanoid32();
 
     /**
-     * Add the file information to the database
+     * Get fileType from mimetype
      */
-    await addFileInfomationToDB(
-      "id", // get userID from JWT
-      fileName || newFileName, // get file name from body
-      newFileName,
-      "png", // fget file extension from file name
-      "image", // get filetype from mine type
-      fileSize,
-      fileUrl,
-      deleteToken, // generate delete token with nanoid
-      tags,
-    );
+    const fileType: FileType = mimetype?.includes("image")
+      ? "IMAGE"
+      : mimetype?.includes("text")
+      ? "TEXT"
+      : "OTHER";
 
+    /**
+     *  Add the file information to the database.
+     */
+
+    const file = await db.upload.create({
+      data: {
+        uploaderId,
+        name,
+        fileType,
+        fileSize,
+        fileUrl,
+        deleteToken,
+        tags: {
+          create: tags.map((tag) => ({
+            name: tag,
+          })),
+        },
+      },
+    });
+
+    if (!file) {
+      /**
+       * Set the command to delete the file from S3
+       */
+      const destroyCommand = new DeleteObjectsCommand({
+        Bucket: env.S3_BUCKET,
+        Delete: {
+          Objects: [
+            {
+              Key: newFileName,
+            },
+          ],
+        },
+      });
+
+      /**
+       * Delete the file from S3 if the file was not created in the database
+       */
+      await S3.send(destroyCommand);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error uploading the file.",
+      });
+    }
     /**
      * Return the file URL
      */
     return {
-      name: fileName,
-      tags: tags,
-      url: fileUrl,
-      deleteToken: `${env.NEXT_PUBLIC_APP_URL}/api/3rd-party/upload/delete?token=${deleteToken}`,
+      name,
+      tags,
+      fileType,
+      fileSize,
+      fileUrl,
+      deleteUrl: `${env.NEXT_PUBLIC_APP_URL}/api/3rd-party/upload/delete?token=${deleteToken}`,
     };
   } catch (err) {
-    return err;
+    return false;
   }
 }
 
 /**
- * Add the file information to the database
- * @param uploaderId
- * @param name
- * @param fileName
- * @param fileExtension
- * @param fileType
- * @param fileSize
- * @param fileUrl
- * @param deleteToken
- * @param tags
- * @returns file object
+ * Check if header has authorization token and if it is valid
+ * @param req
  */
-async function addFileInfomationToDB(
-  uploaderId: string,
-  name: string,
-  fileName: string,
-  fileExtension: string,
-  fileType: string,
-  fileSize: number,
-  fileUrl: string,
-  deleteToken: string,
-  tags: string[],
-) {
-  /**
-   * Loop through the tags and add them to the database.
-   * Create an array of promises to ensure that all of the tags are created before continuing.
-   * Then return array of tag IDs
-   */
-  const promises = tags.map(async (newTag) => {
-    const tag = await db.uploadTag.create({
-      data: {
-        name: newTag,
+
+async function checkAuth(req: NextApiRequest) {
+  try {
+    const token = req.headers.authorization ?? "";
+    if (!token) return false;
+    const decodedToken = jwt.verify(token, env.JWT_SECRET);
+    if (!decodedToken) return false;
+
+    /**
+     * check hash of token in database to see if it exists and not revoked or expired
+     */
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const intergationToken = await db.intergationToken.findFirst({
+      where: {
+        tokenHash,
+        isRevoked: false,
       },
     });
-    return tag.id;
-  });
 
-  const tagIds = await Promise.all(promises);
+    if (!intergationToken) return false;
 
-  /**
-   *  Add the file information to the database.
-   */
-  const file = await db.upload.create({
-    data: {
-      uploaderId,
-      name,
-      fileName,
-      fileExtension,
-      fileType: fileType as FileType,
-      fileSize,
-      fileUrl,
-      deleteToken,
-      tags: {
-        connect: tagIds.map((tagId) => ({ id: tagId })),
+    /**
+     * Find User in database from sub in JWT token
+     */
+    const user = await db.user.findUnique({
+      where: {
+        id: decodedToken.sub as string,
       },
-    },
-  });
-  return file;
-}
+    });
 
+    if (!user) return false;
+
+    // check if token is never
+    if (!intergationToken?.isNever) {
+      console.log("not never");
+      // check if token is expired or not
+      if (intergationToken?.expiresAt) {
+        if (new Date() > intergationToken?.expiresAt) return false;
+      }
+    }
+
+    return user;
+  } catch (err) {
+    return false;
+  }
+}
 /**
  * Handle the POST request
  * @param req
@@ -179,14 +223,33 @@ async function addFileInfomationToDB(
  * @returns object with message and data with file name, tags, delete token, and file URL.
  */
 async function POST(req: NextApiRequest, res: NextApiResponse) {
-  /**fileType
-   * Check header for API key
+  /**
+   * Check if user is authorized to access this endpoint
    */
+  const user = await checkAuth(req);
+  if (!user) {
+    return res.status(401).json({
+      error: true,
+      code: "UNAUTHORIZED",
+      message: "You are not authorized to access this endpoint.",
+    });
+  }
+
+  if (user.isBanned || user.isSuspened) {
+    return res.status(403).json({
+      error: true,
+      code: "FORBIDDEN",
+      message:
+        "You have been banned or suspended from the app and are not allowed to access this endpoint.",
+    });
+  }
+
   const form = new IncomingForm({
     keepExtensions: true,
     hashAlgorithm: "sha256",
     maxFileSize: 100 * 1024 * 1024, // 100MB
   });
+
   form.parse(req, (err, fields, files) => {
     const { tags } = fields;
 
@@ -214,14 +277,15 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
       if (!fields.name[0]) return;
       if (fields.name[0].trim() === "") return;
 
-      formatedName = fields.name[0] || files.file[0].newFilename;
+      formatedName = fields.name[0];
+    } else {
+      formatedName = path.parse(files.file[0].newFilename).name;
     }
 
     if (err) {
-      return res.status(500).json({
-        error: true,
+      throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Error parsing the request body.",
+        message: "Error uploading the file.",
       });
     }
 
@@ -230,6 +294,7 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
      */
     const allPromise = Promise.all([
       uploadFile(
+        user.id,
         formatedName,
         files.file[0].newFilename,
         files.file[0].size,
@@ -264,7 +329,7 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
     data: {
       type: "UPLOAD_CREATED",
       description: "File has been uploaded by",
-      userId: "test",
+      userId: user.id,
     },
   });
 }

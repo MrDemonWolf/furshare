@@ -58,12 +58,10 @@ export default function AppLayout(props: PropsWithChildren) {
                     </Link>
                   </div>
 
-                  {/* Right section on desktop */}
-                  <div className="hidden lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
+                  <div className="hidden rounded-full bg-white p-0.5  lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
                     <NavbarUserButton />
                   </div>
 
-                  {/* Search */}
                   <div className="min-w-0 flex-1 px-12 lg:hidden">
                     <div className="mx-auto w-full max-w-xs">
                       <label htmlFor="desktop-search" className="sr-only">
@@ -87,9 +85,7 @@ export default function AppLayout(props: PropsWithChildren) {
                     </div>
                   </div>
 
-                  {/* Menu button */}
                   <div className="absolute right-0 flex-shrink-0 lg:hidden">
-                    {/* Mobile menu button */}
                     <Popover.Button className="relative inline-flex items-center justify-center rounded-md bg-transparent p-2 text-indigo-200 hover:bg-white hover:bg-opacity-10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
                       <span className="absolute -inset-0.5" />
                       <span className="sr-only">Open main menu</span>
@@ -215,7 +211,7 @@ export default function AppLayout(props: PropsWithChildren) {
                                   pathname === item.href
                                     ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white"
                                     : "text-gray-600 hover:bg-gray-50 dark:text-gray-100",
-                                  "block rounded-md px-3 py-2 text-base font-medium  hover:bg-gray-100 hover:text-gray-800",
+                                  "block rounded-md px-3 py-2 text-right text-base font-medium  hover:bg-gray-100 hover:text-gray-800",
                                 )}
                                 aria-current={
                                   pathname === item.href ? "page" : undefined
@@ -226,7 +222,7 @@ export default function AppLayout(props: PropsWithChildren) {
                             ))}
                           </div>
                         </div>
-                        <div className="pb-2 pt-4">
+                        <div className="py-4">
                           <div className="flex items-center px-5">
                             <button
                               type="button"

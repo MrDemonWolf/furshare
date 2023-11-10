@@ -1,4 +1,5 @@
 import { actionLogRouter } from "~/server/api/routers/action-log";
+import { intergationsRouter } from "~/server/api/routers/intergations";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -8,6 +9,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   actionLog: actionLogRouter,
+  intergations: intergationsRouter,
 });
 
 // export type definition of API

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 export default function ThemeToggle() {
   const { setTheme, theme } = useTheme();
 
-  /** Create click toggle between light,dark, and system */
   const toggleTheme = () => {
     if (theme === "light") {
       setTheme("dark");

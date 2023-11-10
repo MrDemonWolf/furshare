@@ -2,8 +2,22 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
+import { api } from "~/utils/api";
+
 export default function Example() {
+  enum Expiry {
+    never = "never",
+    oneyear = "oneyear",
+    ninetydays = "ninetydays",
+    thirtydays = "thirtydays",
+  }
+
+  const { mutate } = api.intergations.create.useMutation();
+
   const [open, setOpen] = useState(true);
+
+  const [label, setLabel] = useState<string>("");
+  const [expiry, setExpiry] = useState<Expiry>(Expiry.never);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -69,6 +83,8 @@ export default function Example() {
                                   name="project-name"
                                   id="project-name"
                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  value={label}
+                                  onChange={(e) => setLabel(e.target.value)}
                                 />
                               </div>
                             </div>
@@ -86,7 +102,10 @@ export default function Example() {
                                       aria-describedby="privacy-public-description"
                                       type="radio"
                                       className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                      defaultChecked
+                                      checked={expiry === Expiry.never}
+                                      onClick={() => {
+                                        setExpiry(Expiry.never);
+                                      }}
                                     />
                                   </div>
                                   <div className="pl-7 text-sm leading-6">
@@ -114,6 +133,10 @@ export default function Example() {
                                         aria-describedby="privacy-private-to-project-description"
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        checked={expiry === Expiry.oneyear}
+                                        onClick={() => {
+                                          setExpiry(Expiry.oneyear);
+                                        }}
                                       />
                                     </div>
                                     <div className="pl-7 text-sm leading-6">
@@ -143,6 +166,10 @@ export default function Example() {
                                         aria-describedby="privacy-private-to-project-description"
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        checked={expiry === Expiry.ninetydays}
+                                        onClick={() => {
+                                          setExpiry(Expiry.ninetydays);
+                                        }}
                                       />
                                     </div>
                                     <div className="pl-7 text-sm leading-6">
@@ -172,6 +199,10 @@ export default function Example() {
                                         aria-describedby="privacy-private-to-project-description"
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        checked={expiry === Expiry.thirtydays}
+                                        onClick={() => {
+                                          setExpiry(Expiry.thirtydays);
+                                        }}
                                       />
                                     </div>
                                     <div className="pl-7 text-sm leading-6">
@@ -208,6 +239,13 @@ export default function Example() {
                       </button>
                       <button
                         type="submit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          mutate({
+                            label: "test",
+                            expiry,
+                          });
+                        }}
                         className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       >
                         Create token
