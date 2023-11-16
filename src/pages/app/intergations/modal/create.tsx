@@ -4,6 +4,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import { api } from "~/utils/api";
 
+import useCreateTokenModal from "~/hooks/useCreateTokenModal";
+
 export default function Example() {
   enum Expiry {
     never = "never",
@@ -14,14 +16,14 @@ export default function Example() {
 
   const { mutate } = api.intergations.create.useMutation();
 
-  const [open, setOpen] = useState(true);
+  const { onClose, isOpen } = useCreateTokenModal();
 
   const [label, setLabel] = useState<string>("");
   const [expiry, setExpiry] = useState<Expiry>(Expiry.never);
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <div className="fixed inset-0" />
 
         <div className="fixed inset-0 overflow-hidden">
@@ -48,7 +50,7 @@ export default function Example() {
                             <button
                               type="button"
                               className="relative rounded-md bg-indigo-700 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                              onClick={() => setOpen(false)}
+                              onClick={() => onClose}
                             >
                               <span className="absolute -inset-2.5" />
                               <span className="sr-only">Close panel</span>
@@ -233,7 +235,7 @@ export default function Example() {
                       <button
                         type="button"
                         className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                        onClick={() => setOpen(false)}
+                        onClick={() => onClose}
                       >
                         Nevermind
                       </button>
