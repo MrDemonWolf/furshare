@@ -61,21 +61,6 @@ export default function IntergationsPage() {
                   <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                     <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-900 dark:text-gray-200">
                       <tr>
-                        <th scope="col" className="p-4">
-                          <div className="flex items-center">
-                            <input
-                              id="checkbox-all-search"
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
-                            />
-                            <label
-                              htmlFor="checkbox-all-search"
-                              className="sr-only"
-                            >
-                              checkbox
-                            </label>
-                          </div>
-                        </th>
                         <th scope="col" className="w-1 px-6 py-3 md:w-1/2">
                           Label
                         </th>
@@ -110,21 +95,6 @@ export default function IntergationsPage() {
                                 className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
                                 key={intergation.id}
                               >
-                                <td className="w-4 p-4">
-                                  <div className="flex items-center">
-                                    <input
-                                      id="checkbox-table-search-1"
-                                      type="checkbox"
-                                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
-                                    />
-                                    <label
-                                      htmlFor="checkbox-table-search-1"
-                                      className="sr-only"
-                                    >
-                                      checkbox
-                                    </label>
-                                  </div>
-                                </td>
                                 <th
                                   scope="row"
                                   className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
@@ -163,7 +133,7 @@ export default function IntergationsPage() {
                         intergations &&
                         intergations.data.length === 0 && (
                           <>
-                            <td className="text-center" colSpan={5}>
+                            <td className="text-center" colSpan={4}>
                               <svg
                                 className="mx-auto h-12 w-12 text-gray-400"
                                 fill="none"
@@ -219,7 +189,7 @@ export default function IntergationsPage() {
                         </span>
                       </span>
                     )}
-                    <ul className="inline-flex h-8 -space-x-px text-sm">
+                    {/* <ul className="inline-flex h-8 -space-x-px text-sm">
                       <li>
                         <a
                           href="#"
@@ -229,14 +199,14 @@ export default function IntergationsPage() {
                         </a>
                       </li>
                       <li>
-                        <a
-                          href="#"
+                        <button
+                          type="button"
                           className="flex h-8 items-center justify-center rounded-r-lg border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                         >
                           Next
-                        </a>
+                        </button>
                       </li>
-                    </ul>
+                    </ul> */}
                   </nav>
                 </div>
               </div>

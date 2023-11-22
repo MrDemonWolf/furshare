@@ -38,7 +38,7 @@ export const intergationsRouter = createTRPCRouter({
       orderBy: {
         createdAt: "desc",
       },
-      take: 10,
+      // take: 8,
     });
     const intergationsCount = await ctx.db.intergationToken.count({
       where: {
@@ -96,7 +96,7 @@ export const intergationsRouter = createTRPCRouter({
           userId,
           isRevoked: false,
         },
-        take: 10,
+        take: 8,
       });
       return {
         pagenation: {
