@@ -1,19 +1,23 @@
+import type { PropsWithChildren } from "react";
 import { Fragment } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
-
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 
 dayjs.extend(LocalizedFormat);
 
-import NavbarUserButton from "~/components/navbar/user-button";
 import { env } from "~/env.mjs";
+
+/**
+ * Components
+ */
+import NavbarUserButton from "~/components/navbar/user-button";
+import ThemeToggle from "~/components/global/theme-toggle";
 
 const navigation = [
   { name: "Home", href: "/app" },
@@ -24,8 +28,6 @@ const navigation = [
 function classNames(...classes: unknown[]) {
   return classes.filter(Boolean).join(" ");
 }
-
-import type { PropsWithChildren } from "react";
 
 export default function AppLayout(props: PropsWithChildren) {
   const router = useRouter();
@@ -52,14 +54,20 @@ export default function AppLayout(props: PropsWithChildren) {
                         width={32}
                         height={32}
                       />
-                      <span className="ml-3 hidden text-xl font-bold md:inline-block">
+                      <span className="ml-3 hidden text-xl font-bold text-white md:inline-block">
                         {env.NEXT_PUBLIC_APP_NAME}
                       </span>
                     </Link>
                   </div>
 
-                  <div className="hidden rounded-full bg-white p-0.5  lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
-                    <NavbarUserButton />
+                  <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-1">
+                    <ThemeToggle
+                      sun="text-gray-100"
+                      button="hover:bg-gray-500/80"
+                    />
+                    <div className="rounded-full bg-white p-0.5">
+                      <NavbarUserButton />
+                    </div>
                   </div>
 
                   <div className="min-w-0 flex-1 px-12 lg:hidden">
@@ -163,7 +171,7 @@ export default function AppLayout(props: PropsWithChildren) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <Popover.Overlay className="fixed inset-0 z-20 bg-black bg-opacity-25" />
+                    <Popover.Overlay className="fixed inset-0 z-20 overflow-hidden bg-black bg-opacity-25" />
                   </Transition.Child>
 
                   <Transition.Child
@@ -223,10 +231,11 @@ export default function AppLayout(props: PropsWithChildren) {
                           </div>
                         </div>
                         <div className="py-4">
-                          <div className="flex items-center px-5">
+                          <div className="flex justify-end px-5">
+                            <ThemeToggle />
                             <button
                               type="button"
-                              className="relative ml-auto flex-shrink-0 rounded-full bg-white p-0.5 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                              className="rounded-full bg-white p-0.5 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                               <NavbarUserButton />
                             </button>

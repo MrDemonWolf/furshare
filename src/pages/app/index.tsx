@@ -28,8 +28,8 @@ export default function AppPage() {
                 <h2 className="sr-only" id="section-2-title">
                   Section title
                 </h2>
-                <div className="overflow-hidden rounded-lg bg-white shadow">
-                  <div className="p-6 text-black">
+                <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700">
+                  <div className="p-6 text-black dark:text-gray-100">
                     <h1 className="mb-4 text-2xl font-bold">Action Log</h1>
                     <UserActionLog />
                   </div>

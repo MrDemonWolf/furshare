@@ -14,11 +14,13 @@ export default function Example() {
             {stat.name}
           </p>
           <p className="mt-2 flex items-baseline gap-x-2">
-            <span className="text-4xl font-semibold tracking-tight text-white">
+            <span className="tracking-tighttext-gray-900 text-4xl font-semibold dark:text-white">
               {stat.value}
             </span>
             {stat.unit ? (
-              <span className="text-sm text-gray-400">{stat.unit}</span>
+              <span className="text-sm text-gray-900 dark:text-gray-400">
+                {stat.unit}
+              </span>
             ) : null}
           </p>
         </div>

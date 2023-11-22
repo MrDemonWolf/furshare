@@ -31,7 +31,7 @@ export default function UserActionLog() {
                   <div className="relative flex space-x-3">
                     <div>
                       {action.type === "UPLOAD_CREATED" && (
-                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-white">
+                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
                           <ArrowUpTrayIcon
                             className="text-gray-900"
                             width={12}
@@ -43,14 +43,14 @@ export default function UserActionLog() {
                     </div>
                     <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                       <div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-100">
                           {action.description} by{" "}
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-indigo-500">
                             {action.user.displayName}
                           </span>
                         </p>
                       </div>
-                      <div className="whitespace-nowrap text-right text-sm text-gray-500">
+                      <div className="whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-200">
                         <time dateTime={dayjs(action.createdAt).format("LL")}>
                           {dayjs(action.createdAt).format("LL")}
                         </time>
