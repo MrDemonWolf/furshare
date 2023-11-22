@@ -2,8 +2,12 @@ import Link from "next/link";
 
 import { useAuth } from "@clerk/nextjs";
 
-import Header from "@/components/landing/header";
 import { env } from "~/env.mjs";
+
+/**
+ * Components
+ */
+import Header from "@/components/landing/header";
 
 export default function Disabled() {
   const { isLoaded, isSignedIn } = useAuth();

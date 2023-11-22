@@ -3,8 +3,12 @@ import Image from "next/image";
 
 import { useAuth } from "@clerk/nextjs";
 
-import Header from "@/components/landing/header";
 import { env } from "~/env.mjs";
+
+/**
+ * Components
+ */
+import Header from "@/components/landing/header";
 
 export default function SignUpEnabled() {
   const { isLoaded, isSignedIn } = useAuth();
