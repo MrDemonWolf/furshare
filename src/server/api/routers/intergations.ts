@@ -1,3 +1,4 @@
+import { ActionLogType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import dayjs from "dayjs";
@@ -110,7 +111,10 @@ export const intergationsRouter = createTRPCRouter({
   create: privateProcedure
     .input(
       z.object({
-        label: z.string().default("Intergation Token"),
+        label: z
+          .string()
+          .min(1, "Label is required")
+          .default("Intergation Token"),
         expiry: z.nativeEnum(Expiry).default(Expiry.never),
       }),
     )
@@ -176,10 +180,47 @@ export const intergationsRouter = createTRPCRouter({
         },
       });
 
+      await ctx.db.actionLog.create({
+        data: {
+          type: ActionLogType.INTERGATION_TOKEN_CREATED,
+          description: "Intergation token created",
+          userId: ctx.userId,
+        },
+      });
+
       return {
         message:
           "Intergation token created, please store this token securely. It will not be shown again.",
         token: jwtToken,
+      };
+    }),
+  remove: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      const token = await ctx.db.intergationToken.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!token)
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid token" });
+      if (token.userId !== ctx.userId)
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid token" });
+      await ctx.db.intergationToken.update({
+        where: {
+          id,
+        },
+        data: {
+          isRevoked: true,
+        },
+      });
+      return {
+        message: "Token revoked",
       };
     }),
 });

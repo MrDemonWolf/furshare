@@ -1,5 +1,7 @@
+import type { IntergationToken } from "@prisma/client";
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import toast from "react-hot-toast";
 
 import { api } from "~/utils/api";
 
@@ -13,12 +15,34 @@ export default function CreateIntergationTokenModal() {
     thirtydays = "thirtydays",
   }
 
-  const { mutate } = api.intergations.create.useMutation();
+  const { onClose, isOpen, setToken } = useCreateTokenModal();
 
-  const { onClose, isOpen } = useCreateTokenModal();
-
-  const [label, setLabel] = useState<string>("");
+  const [label, setLabel] = useState<string>("Default label");
   const [expiry, setExpiry] = useState<Expiry>(Expiry.never);
+
+  const ctx = api.intergations.get.useQuery();
+
+  const { mutate } = api.intergations.create.useMutation({
+    onSuccess: (data) => {
+      void ctx.refetch();
+      setLabel("Default Intergation Token Label");
+      setExpiry(Expiry.never);
+      onClose();
+      console.log(data.message);
+      console.log(data.token);
+
+      setToken(data.token);
+      toast.success("Intergation token created");
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors?.label;
+      if (errorMessage?.[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to create intergation token, please try again.");
+      }
+    },
+  });
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -99,6 +123,9 @@ export default function CreateIntergationTokenModal() {
                                       type="radio"
                                       className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                       checked={expiry === Expiry.never}
+                                      onChange={() => {
+                                        setExpiry(Expiry.never);
+                                      }}
                                       onClick={() => {
                                         setExpiry(Expiry.never);
                                       }}
@@ -130,6 +157,9 @@ export default function CreateIntergationTokenModal() {
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600 "
                                         checked={expiry === Expiry.oneyear}
+                                        onChange={() => {
+                                          setExpiry(Expiry.oneyear);
+                                        }}
                                         onClick={() => {
                                           setExpiry(Expiry.oneyear);
                                         }}
@@ -163,6 +193,9 @@ export default function CreateIntergationTokenModal() {
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                         checked={expiry === Expiry.ninetydays}
+                                        onChange={() => {
+                                          setExpiry(Expiry.ninetydays);
+                                        }}
                                         onClick={() => {
                                           setExpiry(Expiry.ninetydays);
                                         }}
@@ -196,6 +229,9 @@ export default function CreateIntergationTokenModal() {
                                         type="radio"
                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                         checked={expiry === Expiry.thirtydays}
+                                        onChange={() => {
+                                          setExpiry(Expiry.thirtydays);
+                                        }}
                                         onClick={() => {
                                           setExpiry(Expiry.thirtydays);
                                         }}
@@ -237,8 +273,9 @@ export default function CreateIntergationTokenModal() {
                         type="submit"
                         onClick={(e) => {
                           e.preventDefault();
+
                           mutate({
-                            label: "test",
+                            label,
                             expiry,
                           });
                         }}

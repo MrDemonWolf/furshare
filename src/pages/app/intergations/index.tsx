@@ -14,11 +14,19 @@ import { api } from "~/utils/api";
 dayjs.extend(LocalizedFormat);
 
 export default function IntergationsPage() {
-  const { onOpen } = useCreateTokenModal();
+  const { onOpen, token } = useCreateTokenModal();
 
   const { data: intergations, isLoading } =
     api.intergations.get.useQuery() ?? [];
 
+  const ctx = api.intergations.get.useQuery();
+
+  const { mutate: removeIntergation, isLoading: pendingRemovel } =
+    api.intergations.remove.useMutation({
+      onSuccess: () => {
+        void ctx.refetch();
+      },
+    });
   return (
     <AppLayout>
       <main className="-mt-24 pb-8">
@@ -28,6 +36,34 @@ export default function IntergationsPage() {
             <h2 className="sr-only" id="section-title">
               API Tokens
             </h2>
+            {token && (
+              <div className="rounded-md bg-green-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 text-green-400"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        vectorEffect="non-scaling-stroke"
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16z"
+                        clipRule="evenodd"
+                      />
+                      <path
+                        vectorEffect="non-scaling-stroke"
+                        fillRule="evenodd"
+                        d="M13 7a1 1 0 10-2 0v1.586L9.707 8.293a1 1 0 00-1.414 1.414l2.5 2.5a1 1 0 001.414 0l2.5-2.5a1 1 0 00-1.414-1.414L13 8.586V7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700 dark:shadow-gray-800">
               <div className="p-6">
                 <div className="mb-4 sm:flex sm:items-center">
@@ -110,20 +146,29 @@ export default function IntergationsPage() {
                                   {dayjs(intergation.createdAt).format("LL")}
                                 </td>
                                 <td className="flex flex-col items-center space-y-2 px-6 py-4 text-center md:float-right md:block md:space-x-2 md:space-y-0">
-                                  <TrashIcon
-                                    width={24}
-                                    height={24}
-                                    className=" block text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500 md:inline"
+                                  <button
+                                    onClick={() =>
+                                      removeIntergation({
+                                        id: intergation.id,
+                                      })
+                                    }
                                   >
-                                    <span className="sr-only">Delete</span>
-                                  </TrashIcon>
-                                  <PencilIcon
+                                    <TrashIcon
+                                      width={24}
+                                      height={24}
+                                      className=" block text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500 md:inline"
+                                    >
+                                      <span className="sr-only">Delete</span>
+                                    </TrashIcon>
+                                  </button>
+
+                                  {/* <PencilIcon
                                     width={24}
                                     height={24}
                                     className="block text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 md:inline"
                                   >
                                     Edit
-                                  </PencilIcon>
+                                  </PencilIcon> */}
                                 </td>
                               </tr>
                             ))}
@@ -159,6 +204,10 @@ export default function IntergationsPage() {
                               <div className="mt-6">
                                 <button
                                   type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    onOpen();
+                                  }}
                                   className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
                                   <PlusIcon

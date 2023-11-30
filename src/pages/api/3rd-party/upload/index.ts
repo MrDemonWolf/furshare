@@ -1,4 +1,5 @@
 import type { FileType } from "@prisma/client";
+import { ActionLogType } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as path from "path";
 import { IncomingForm } from "formidable";
@@ -327,7 +328,7 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
   });
   await db.actionLog.create({
     data: {
-      type: "UPLOAD_CREATED",
+      type: ActionLogType.UPLOAD_CREATED,
       description: "File has been uploaded by",
       userId: user.id,
     },

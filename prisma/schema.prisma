@@ -30,6 +30,8 @@ enum FileType {
 }
 
 enum ActionLogType {
+    INTERGATION_TOKEN_CREATED   @map("INTERGATION_TOKEN_CREATED")
+    INTERGATION_TOKEN_REVOKED   @map("INTERGATION_TOKEN_REVOKED")
     UPLOAD_CREATED              @map("UPLOAD_CREATED")
     UPLOAD_DELETED              @map("UPLOAD_DELETED")
     USER_BANNED                 @map("USER_BANNED")
@@ -101,7 +103,7 @@ model UploadTag {
 model IntergationToken {
     id        String    @id @default(uuid())
     tokenHash String
-    label     String    @default("Intergation Token")
+    label     String    @default("Default Intergation Token Label")
     lastUsed  DateTime?
     expiresAt DateTime?
     isNever   Boolean   @default(true) // aka never expires

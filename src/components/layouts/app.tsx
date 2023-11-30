@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Popover, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
+import { Toaster } from "react-hot-toast";
 
 dayjs.extend(LocalizedFormat);
 
@@ -250,6 +250,7 @@ export default function AppLayout(props: PropsWithChildren) {
             </>
           )}
         </Popover>
+        <Toaster position="bottom-center" />
         {props.children}
         <footer>
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">

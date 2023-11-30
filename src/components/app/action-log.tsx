@@ -1,5 +1,8 @@
-import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-
+import {
+  ArrowUpTrayIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
+import { ActionLogType } from "@prisma/client";
 import { api } from "~/utils/api";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
@@ -34,9 +37,31 @@ export default function UserActionLog() {
                   ) : null}
                   <div className="relative flex space-x-3">
                     <div>
-                      {action.type === "UPLOAD_CREATED" && (
+                      {action.type === ActionLogType.UPLOAD_CREATED && (
                         <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
                           <ArrowUpTrayIcon
+                            className="text-gray-900"
+                            width={12}
+                            height={12}
+                            aria-hidden="true"
+                          />
+                        </span>
+                      )}
+                      {action.type ===
+                        ActionLogType.INTERGATION_TOKEN_CREATED && (
+                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
+                          <ArrowTopRightOnSquareIcon
+                            className="text-gray-900"
+                            width={12}
+                            height={12}
+                            aria-hidden="true"
+                          />
+                        </span>
+                      )}
+                      {action.type ===
+                        ActionLogType.INTERGATION_TOKEN_REVOKED && (
+                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
+                          <ArrowTopRightOnSquareIcon
                             className="text-gray-900"
                             width={12}
                             height={12}
