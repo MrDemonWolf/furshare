@@ -1,8 +1,10 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { PlusIcon } from "@heroicons/react/20/solid";
-
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import copy from "copy-to-clipboard";
+import toast from "react-hot-toast";
 import { LoadingSpinner } from "~/components/global/loading";
 import AppLayout from "~/components/layouts/app";
 import useCreateTokenModal from "~/hooks/useCreateTokenModal";
@@ -14,7 +16,7 @@ import { api } from "~/utils/api";
 dayjs.extend(LocalizedFormat);
 
 export default function IntergationsPage() {
-  const { onOpen, token } = useCreateTokenModal();
+  const { onOpen, token, resetToken } = useCreateTokenModal();
 
   const { data: intergations, isLoading } =
     api.intergations.get.useQuery() ?? [];
@@ -25,6 +27,10 @@ export default function IntergationsPage() {
     api.intergations.remove.useMutation({
       onSuccess: () => {
         void ctx.refetch();
+        toast.success("Intergation token removed");
+      },
+      onError: () => {
+        toast.error("Failed to remove intergation token");
       },
     });
   return (
@@ -36,34 +42,57 @@ export default function IntergationsPage() {
             <h2 className="sr-only" id="section-title">
               API Tokens
             </h2>
+
             {token && (
-              <div className="rounded-md bg-green-50 p-4">
+              <div className="mb-6 w-full rounded-md bg-green-50 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg
+                    <CheckCircleIcon
                       className="h-5 w-5 text-green-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
                       aria-hidden="true"
-                    >
-                      <path
-                        vectorEffect="non-scaling-stroke"
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16z"
-                        clipRule="evenodd"
-                      />
-                      <path
-                        vectorEffect="non-scaling-stroke"
-                        fillRule="evenodd"
-                        d="M13 7a1 1 0 10-2 0v1.586L9.707 8.293a1 1 0 00-1.414 1.414l2.5 2.5a1 1 0 001.414 0l2.5-2.5a1 1 0 00-1.414-1.414L13 8.586V7z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-bold text-gray-900">
+                      Intergation token created
+                    </h3>
+                    <div className="my-4 overflow-y-auto whitespace-pre-wrap break-all bg-green-100 p-4 text-gray-700 shadow-inner">
+                      {token}
+                    </div>
+                    <div className="font-medium text-gray-700">
+                      Please save this token somewhere safe. You will not be
+                      able to view it again. If you lose it, you will need to go
+                      through the process of creating a new token.
+                    </div>
+                    <div className="mt-4">
+                      <div className="-mx-2 -my-1.5 flex">
+                        <button
+                          type="button"
+                          className="rounded-md bg-indigo-400 px-2 py-1.5 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:ring-offset-indigo-50"
+                          onClick={() => {
+                            copy(token);
+                            toast.success("Token copied to clipboard");
+                          }}
+                        >
+                          Copy token
+                        </button>
+                        <button
+                          type="button"
+                          className="ml-3 rounded-md bg-red-400 px-2 py-1.5 text-sm font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+                          onClick={() => {
+                            resetToken();
+                            toast.dismiss();
+                          }}
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
             <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700 dark:shadow-gray-800">
               <div className="p-6">
                 <div className="mb-4 sm:flex sm:items-center">
@@ -115,14 +144,17 @@ export default function IntergationsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {isLoading && (
+                      {(isLoading || pendingRemovel) && (
                         <tr>
-                          <td colSpan={5}>
-                            <LoadingSpinner />
+                          <td className="text-center" colSpan={4}>
+                            <div className="mx-auto p-10">
+                              <LoadingSpinner size={64} />
+                            </div>
                           </td>
                         </tr>
                       )}
                       {!isLoading &&
+                        !pendingRemovel &&
                         intergations &&
                         intergations.data.length > 0 && (
                           <>
@@ -147,11 +179,12 @@ export default function IntergationsPage() {
                                 </td>
                                 <td className="flex flex-col items-center space-y-2 px-6 py-4 text-center md:float-right md:block md:space-x-2 md:space-y-0">
                                   <button
-                                    onClick={() =>
+                                    onClick={() => {
+                                      resetToken();
                                       removeIntergation({
                                         id: intergation.id,
-                                      })
-                                    }
+                                      });
+                                    }}
                                   >
                                     <TrashIcon
                                       width={24}
@@ -178,7 +211,10 @@ export default function IntergationsPage() {
                         intergations &&
                         intergations.data.length === 0 && (
                           <>
-                            <td className="text-center" colSpan={4}>
+                            <td
+                              className="py-16 text-center md:p-28"
+                              colSpan={4}
+                            >
                               <svg
                                 className="mx-auto h-12 w-12 text-gray-400"
                                 fill="none"
@@ -194,10 +230,10 @@ export default function IntergationsPage() {
                                   d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
                                 />
                               </svg>
-                              <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                              <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
                                 No Intergations Tokens Found
                               </h3>
-                              <p className="mt-1 text-sm text-gray-500">
+                              <p className="mt-1 text-sm text-gray-500 dark:text-gray-200">
                                 Get started by creating by creating a new
                                 intergation token.
                               </p>

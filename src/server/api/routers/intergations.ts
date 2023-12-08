@@ -219,6 +219,15 @@ export const intergationsRouter = createTRPCRouter({
           isRevoked: true,
         },
       });
+
+      await ctx.db.actionLog.create({
+        data: {
+          type: ActionLogType.INTERGATION_TOKEN_REVOKED,
+          description: "Intergation token revoked",
+          userId: ctx.userId,
+        },
+      });
+
       return {
         message: "Token revoked",
       };

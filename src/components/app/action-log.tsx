@@ -60,7 +60,7 @@ export default function UserActionLog() {
                       )}
                       {action.type ===
                         ActionLogType.INTERGATION_TOKEN_REVOKED && (
-                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
+                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-red-400 align-middle ring-8 ring-gray-200 dark:text-white">
                           <ArrowTopRightOnSquareIcon
                             className="text-gray-900"
                             width={12}
@@ -74,7 +74,7 @@ export default function UserActionLog() {
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-100">
                           {action.description} by{" "}
-                          <span className="font-medium text-indigo-500">
+                          <span className="font-medium text-indigo-500 dark:text-indigo-200">
                             {action.user.displayName}
                           </span>
                         </p>
@@ -90,6 +90,13 @@ export default function UserActionLog() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {actionLog && actionLog.length === 0 && (
+        <div className="text-center">
+          <p className="text-gray-500 dark:text-gray-200">
+            No actions have been performed yet.
+          </p>
         </div>
       )}
     </>

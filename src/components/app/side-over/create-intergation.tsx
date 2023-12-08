@@ -17,7 +17,7 @@ export default function CreateIntergationTokenModal() {
 
   const { onClose, isOpen, setToken } = useCreateTokenModal();
 
-  const [label, setLabel] = useState<string>("Default label");
+  const [label, setLabel] = useState<string>("Default Integration Token Label");
   const [expiry, setExpiry] = useState<Expiry>(Expiry.never);
 
   const ctx = api.intergations.get.useQuery();
@@ -25,14 +25,10 @@ export default function CreateIntergationTokenModal() {
   const { mutate } = api.intergations.create.useMutation({
     onSuccess: (data) => {
       void ctx.refetch();
-      setLabel("Default Intergation Token Label");
+      setLabel("Default Integration Token Label");
       setExpiry(Expiry.never);
       onClose();
-      console.log(data.message);
-      console.log(data.token);
-
       setToken(data.token);
-      toast.success("Intergation token created");
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors?.label;
