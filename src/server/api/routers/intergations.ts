@@ -128,7 +128,7 @@ export const intergationsRouter = createTRPCRouter({
        */
       switch (expiry) {
         case Expiry.never:
-          expiresAt = null;
+          expiresAt = dayjs().add(1000, "year").toDate();
           expiresIn = null;
           break;
         case Expiry.oneyear:
@@ -149,6 +149,7 @@ export const intergationsRouter = createTRPCRouter({
             message: "Invalid expiry value",
           });
       }
+
       /**
        * Generate a JWT Token signed by the server
        */

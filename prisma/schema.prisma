@@ -83,9 +83,12 @@ model Upload {
     fileType    FileType    @default(OTHER)
     fileUrl     String
     tags        UploadTag[]
+    isDeleted   Boolean     @default(false)
     deleteToken String
     uploader    User        @relation(fields: [uploaderId], references: [id])
     uploaderId  String
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime?   @updatedAt
 
     @@index([uploaderId], name: "uploaderId")
     @@index([name], name: "name")

@@ -3,21 +3,16 @@ import { ActionLogType } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as path from "path";
 import { IncomingForm } from "formidable";
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectsCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
-import sizeOf from "image-size";
 import { customAlphabet } from "nanoid";
 import { TRPCError } from "@trpc/server";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-import { env } from "../../../../env.mjs";
+import { env } from "../../../../../env.mjs";
 
-import { db } from "../../../../server/db";
+import { db } from "../../../../../server/db";
 
 /**
  * Modify the Next.js API route config to allow for the request body to be parsed
@@ -46,84 +41,24 @@ const S3 = new S3Client({
 /**
  * Upload the file to S3 and add the file information to the database
  * @param uploaderId
- * @param name
- * @param newFileName
- * @param fileSize
- * @param mimetype
- * @param tags
- * @param filepath
+ * @param fileName
  * @returns file URL and file object
  */
-async function uploadFile(
-  uploaderId: string,
-  name: string,
-  newFileName: string,
-  fileSize: number,
-  mimetype: string | null,
-  tags: string[],
-  filepath: string,
-) {
+async function deleteFile(uploaderId: string, fileName: string) {
   try {
-    const fileData = fs.readFileSync(filepath);
-
-    /**
-     * Set the command to upload the file to S3
-     */
-    const command = new PutObjectCommand({
-      Bucket: env.S3_BUCKET,
-      Key: `${uploaderId}/${newFileName}`,
-      Body: fileData,
-      ContentType: mimetype ?? undefined,
-      ContentDisposition: "inline filename=" + newFileName,
-    });
-
-    /**
-     * Upload the file to S3
-     */
-    await S3.send(command);
-
-    /**
-     * Generate the public URL for the file
-     */
-    const fileUrl = `${env.BUCKET_PUBLIC_URL}/${uploaderId}/${newFileName}`;
-
-    /**
-     * Delete the file from the local filesystem
-     */
-    fs.unlinkSync(filepath);
-
-    /**
-     * Generate a delete token
-     */
-    const nanoid32 = customAlphabet(urlFriendyAlphabet, 32);
-    const deleteToken = nanoid32();
-
-    /**
-     * Get fileType from mimetype
-     */
-    const fileType: FileType = mimetype?.includes("image")
-      ? "IMAGE"
-      : mimetype?.includes("text")
-      ? "TEXT"
-      : "OTHER";
-    /**
-     *  Add the file information to the database.
-     */
-    const file = await db.upload.create({
-      data: {
+    const file = await db.upload.findFirst({
+      where: {
         uploaderId,
-        name,
-        fileType,
-        fileSize,
-        fileUrl,
-        deleteToken,
-        tags: {
-          create: tags.map((tag) => ({
-            name: tag,
-          })),
-        },
+        name: fileName,
       },
     });
+
+    if (!file) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error deleting the file.",
+      });
+    }
 
     if (!file) {
       /**
@@ -156,8 +91,6 @@ async function uploadFile(
       name,
       tags,
       fileType,
-      imageWidth: width,
-      imageHeight: height,
       fileSize,
       fileUrl,
       deleteUrl: `${env.NEXT_PUBLIC_APP_URL}/api/3rd-party/upload/delete?token=${deleteToken}`,
@@ -168,70 +101,6 @@ async function uploadFile(
 }
 
 /**
- * Check if header has authorization token and if it is valid
- * @param req
- */
-
-async function checkAuth(req: NextApiRequest) {
-  try {
-    const token = req.headers.authorization ?? "";
-    if (!token) return false;
-
-    /**
-     * Verify JWT token
-     */
-    console.log("token", token);
-    console.log("env.JWT_SECRET", env.JWT_SECRET);
-    const decodedToken = jwt.verify(token, env.JWT_SECRET);
-
-    console.log("decodedToken", decodedToken);
-
-    if (!decodedToken) return false;
-
-    /**
-     * check hash of token in database to see if it exists and not revoked or expired
-     */
-    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-
-    const intergationToken = await db.intergationToken.findFirst({
-      where: {
-        tokenHash,
-        isRevoked: false,
-      },
-    });
-
-    if (!intergationToken) return false;
-
-    /**
-     * Find User in database from sub in JWT token
-     */
-    const user = await db.user.findUnique({
-      where: {
-        id: decodedToken.sub as string,
-      },
-    });
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("intergationToken user", user);
-    }
-
-    if (!user) return false;
-
-    // check if token is never
-    if (!intergationToken?.isNever) {
-      console.log("not never");
-      // check if token is expired or not
-      if (intergationToken?.expiresAt) {
-        if (new Date() > intergationToken?.expiresAt) return false;
-      }
-    }
-
-    return user;
-  } catch (err) {
-    return false;
-  }
-}
-/**
  * Handle the POST request
  * @param req
  * @param res
@@ -241,7 +110,7 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
   /**
    * Check if user is authorized to access this endpoint
    */
-  const user = await checkAuth(req);
+  const user = await checkJWT(req);
   if (!user) {
     return res.status(401).json({
       error: true,
@@ -322,14 +191,6 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
     allPromise
       .then((values) => {
         const data = values[0];
-
-        if (!data) {
-          return res.status(500).json({
-            error: true,
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Error uploading the file.",
-          });
-        }
         /**
          * Returns a 201 Created status code along with the file URL, name, and tags
          */

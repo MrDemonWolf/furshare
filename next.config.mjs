@@ -18,7 +18,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["tailwindui.com"],
+    domains: ["tailwindui.com", "pub-7104b2ce4ac84344aa808cd091e91db6.r2.dev"],
   },
 };
 

@@ -26,7 +26,7 @@ export default function AppPage() {
             <div className="grid grid-cols-1 gap-4">
               <section aria-labelledby="section-2-title">
                 <h2 className="sr-only" id="section-2-title">
-                  Section title
+                  Action Log
                 </h2>
                 <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700">
                   <div className="p-6 text-black dark:text-gray-100">
