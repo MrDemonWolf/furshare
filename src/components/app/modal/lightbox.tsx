@@ -1,16 +1,17 @@
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  ExclamationTriangleIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import copy from "copy-to-clipboard";
+import toast from "react-hot-toast";
 
-import useUploadFileModal from "~/hooks/useUploadFileModal";
+import usePreviewUploadModal from "~/hooks/usePreviewUploadModal";
+import { LoadingSpinner } from "~/components/global/loading";
 
-export default function Example() {
-  const { onClose, isOpen, fileUrl, imageWidth, imageHeight } =
-    useUploadFileModal();
+export default function Lightbox() {
+  const { onClose, isOpen, fileUrl } = usePreviewUploadModal();
+
+  const [isLoading, setLoading] = useState(true);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -49,42 +50,56 @@ export default function Example() {
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
                 </div>
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <div>
+                  <div className="mt-3 text-center sm:mt-0 sm:text-left">
                     <Dialog.Title
                       as="h3"
-                      className="text-base font-semibold leading-6 text-gray-900"
+                      className="pb-2 text-xl font-bold leading-6 text-gray-900 "
                     >
-                      Deactivate account
+                      Image Preview
                     </Dialog.Title>
-                    <div className="mt-2 w-full">
+                    <div className="mt-2">
+                      {isLoading && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <LoadingSpinner size={64} />
+                        </div>
+                      )}
+                      {isLoading}
                       <Image
                         src={fileUrl ?? "/images/placeholder.png"}
                         width={400}
                         height={320}
                         sizes="(max-width: 768px) 100vw,
-                        (max-width: 1200px) 50vw,
-                        33vw"
-                        style={{ height: "100%", width: "100%" }} //The point is right there!
+                                      (max-width: 1200px) 50vw,
+                                      33vw"
+                        style={{ height: "100%", width: "100%" }}
                         alt="Uploaded image"
+                        onLoad={() => setLoading(false)}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <div className="mt-5 space-x-2 text-right sm:mt-4">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => onClose()}
+                    className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                    onClick={() => {
+                      if (!fileUrl) return toast.error("No file URL found!");
+                      copy(fileUrl ?? "");
+                      toast.success("Copied to clipboard!");
+                    }}
                   >
-                    Deactivate
+                    Copy Link
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => onClose()}
+                    onClick={() => {
+                      if (!fileUrl) return toast.error("No file URL found!");
+                      window.open(fileUrl, "_blank");
+                    }}
                   >
-                    Cancel
+                    Preview in
                   </button>
                 </div>
               </Dialog.Panel>

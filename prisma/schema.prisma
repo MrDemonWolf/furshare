@@ -81,6 +81,7 @@ model Upload {
     name        String
     fileSize    Int         @default(0) // in bytes
     fileType    FileType    @default(OTHER)
+    fileName    String
     fileUrl     String
     tags        UploadTag[]
     isDeleted   Boolean     @default(false)

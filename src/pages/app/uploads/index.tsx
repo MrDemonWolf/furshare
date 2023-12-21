@@ -2,11 +2,9 @@ import { TrashIcon, ViewfinderCircleIcon } from "@heroicons/react/24/outline";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
-import copy from "copy-to-clipboard";
 import toast from "react-hot-toast";
 import { partial } from "filesize";
-
-import useUploadFileModal from "~/hooks/useUploadFileModal";
+import usePreviewUploadModal from "~/hooks/usePreviewUploadModal";
 import { LoadingSpinner } from "~/components/global/loading";
 import AppLayout from "~/components/layouts/app";
 import ImageLightbox from "~/components/app/modal/lightbox";
@@ -18,27 +16,20 @@ dayjs.extend(LocalizedFormat);
 const size = partial({ standard: "jedec" });
 
 export default function UpLoadsPage() {
-  const {
-    onOpen,
-    setFileURL,
-    resetFileURL,
-    setImageHeight,
-    setImageWidth,
-    resetImageDimensions,
-  } = useUploadFileModal();
+  const { onOpen, setFileURL, resetFileURL } = usePreviewUploadModal();
 
   const { data: uploads, isLoading } = api.uploads.get.useQuery() ?? [];
 
   const ctx = api.uploads.get.useQuery();
 
-  const { mutate: removeIntergation, isLoading: pendingRemovel } =
-    api.intergations.remove.useMutation({
+  const { mutate: removeUpload, isLoading: pendingRemovel } =
+    api.uploads.remove.useMutation({
       onSuccess: () => {
         void ctx.refetch();
-        toast.success("Intergation token removed");
+        toast.success("File has been deleted");
       },
       onError: () => {
-        toast.error("Failed to remove intergation token");
+        toast.error("Something went wrong deleting the file");
       },
     });
   return (
@@ -101,7 +92,7 @@ export default function UpLoadsPage() {
                   <tbody>
                     {(isLoading || pendingRemovel) && (
                       <tr>
-                        <td className="text-center" colSpan={4}>
+                        <td className="text-center" colSpan={5}>
                           <div className="mx-auto p-10">
                             <LoadingSpinner size={64} />
                           </div>
@@ -137,8 +128,6 @@ export default function UpLoadsPage() {
                                 <button
                                   onClick={() => {
                                     setFileURL(upload.fileUrl);
-                                    setImageHeight(upload.imageHeight ?? 1920);
-                                    setImageWidth(upload.imageWidth ?? 1080);
                                     onOpen();
                                   }}
                                 >
@@ -152,7 +141,10 @@ export default function UpLoadsPage() {
                                 </button>
                                 <button
                                   onClick={() => {
-                                    toast.success("Removed upload");
+                                    resetFileURL();
+                                    removeUpload({
+                                      id: upload.id,
+                                    });
                                   }}
                                 >
                                   <TrashIcon
@@ -178,7 +170,7 @@ export default function UpLoadsPage() {
                       )}
                     {!isLoading && uploads && uploads.data.length === 0 && (
                       <>
-                        <td className="py-16 text-center md:p-28" colSpan={4}>
+                        <td className="py-16 text-center md:p-28" colSpan={5}>
                           <svg
                             className="mx-auto h-12 w-12 text-gray-400"
                             fill="none"

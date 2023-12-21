@@ -9,9 +9,7 @@ import {
   DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 import fs from "fs";
-import sizeOf from "image-size";
 import { customAlphabet } from "nanoid";
-import { TRPCError } from "@trpc/server";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
@@ -116,6 +114,7 @@ async function uploadFile(
         fileType,
         fileSize,
         fileUrl,
+        fileName: newFileName,
         deleteToken,
         tags: {
           create: tags.map((tag) => ({
@@ -144,10 +143,7 @@ async function uploadFile(
        * Delete the file from S3 if the file was not created in the database
        */
       await S3.send(destroyCommand);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Error uploading the file.",
-      });
+      return false;
     }
     /**
      * Return the file URL
@@ -156,8 +152,6 @@ async function uploadFile(
       name,
       tags,
       fileType,
-      imageWidth: width,
-      imageHeight: height,
       fileSize,
       fileUrl,
       deleteUrl: `${env.NEXT_PUBLIC_APP_URL}/api/3rd-party/upload/delete?token=${deleteToken}`,
@@ -180,11 +174,7 @@ async function checkAuth(req: NextApiRequest) {
     /**
      * Verify JWT token
      */
-    console.log("token", token);
-    console.log("env.JWT_SECRET", env.JWT_SECRET);
     const decodedToken = jwt.verify(token, env.JWT_SECRET);
-
-    console.log("decodedToken", decodedToken);
 
     if (!decodedToken) return false;
 
@@ -210,10 +200,6 @@ async function checkAuth(req: NextApiRequest) {
         id: decodedToken.sub as string,
       },
     });
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("intergationToken user", user);
-    }
 
     if (!user) return false;
 
@@ -298,7 +284,8 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
     }
 
     if (err) {
-      throw new TRPCError({
+      return res.status(500).json({
+        error: true,
         code: "INTERNAL_SERVER_ERROR",
         message: "Error uploading the file.",
       });
@@ -351,7 +338,7 @@ async function POST(req: NextApiRequest, res: NextApiResponse) {
   await db.actionLog.create({
     data: {
       type: ActionLogType.UPLOAD_CREATED,
-      description: "File has been uploaded by",
+      description: "File has been uploaded",
       userId: user.id,
     },
   });

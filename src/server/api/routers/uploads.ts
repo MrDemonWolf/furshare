@@ -1,8 +1,23 @@
 import { ActionLogType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { S3Client, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
+
+import { env } from "../../../env.mjs";
+
+/**
+ * Create a new S3 client
+ */
+const S3 = new S3Client({
+  region: env.S3_REGION,
+  endpoint: env.S3_ENDPOINT,
+  credentials: {
+    accessKeyId: env.S3_ACCESS_KEY_ID,
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+  },
+});
 
 export const uploadsRouter = createTRPCRouter({
   get: privateProcedure.query(async ({ ctx }) => {
@@ -54,28 +69,72 @@ export const uploadsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      const token = await ctx.db.intergationToken.findUnique({
+
+      const upload = await ctx.db.upload.findUnique({
         where: {
           id,
         },
       });
-      if (!token)
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid token" });
-      if (token.userId !== ctx.userId)
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid token" });
-      await ctx.db.intergationToken.update({
+
+      if (!upload) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Upload not found",
+        });
+      }
+
+      if (upload.uploaderId !== ctx.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      /**
+       * Set the command to delete the file from S3
+       */
+      try {
+        const destroyCommand = new DeleteObjectsCommand({
+          Bucket: env.S3_BUCKET,
+          Delete: {
+            Objects: [
+              {
+                Key: upload.fileName,
+              },
+            ],
+          },
+        });
+
+        /**
+         * Delete the file from S3 if the file was not created in the database
+         */
+        await S3.send(destroyCommand);
+      } catch (err) {
+        new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete file from S3",
+        });
+      }
+
+      await ctx.db.upload.update({
         where: {
           id,
         },
         data: {
-          isRevoked: true,
+          isDeleted: true,
+        },
+      });
+
+      await ctx.db.upload.delete({
+        where: {
+          id,
         },
       });
 
       await ctx.db.actionLog.create({
         data: {
-          type: ActionLogType.INTERGATION_TOKEN_REVOKED,
-          description: "Intergation token revoked",
+          type: ActionLogType.UPLOAD_DELETED,
+          description: "File has been deleted",
           userId: ctx.userId,
         },
       });
