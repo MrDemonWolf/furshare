@@ -64,16 +64,16 @@ async function deleteFile(uploaderId: string, fileName: string) {
       /**
        * Set the command to delete the file from S3
        */
-      const destroyCommand = new DeleteObjectsCommand({
-        Bucket: env.S3_BUCKET,
-        Delete: {
-          Objects: [
-            {
-              Key: newFileName,
-            },
-          ],
-        },
-      });
+      // const destroyCommand = new DeleteObjectsCommand({
+      //   Bucket: env.S3_BUCKET,
+      //   Delete: {
+      //     Objects: [
+      //       {
+      //         Key: newFileName,
+      //       },
+      //     ],
+      //   },
+      // });
 
       /**
        * Delete the file from S3 if the file was not created in the database
