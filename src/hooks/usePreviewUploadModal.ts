@@ -7,6 +7,8 @@ interface PreviewUploadModal {
   fileUrl?: string;
   setFileURL: (url: string) => void;
   resetFileURL: () => void;
+  isLoading?: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 const usePreviewUploadModal = create<PreviewUploadModal>((set) => ({
@@ -16,6 +18,8 @@ const usePreviewUploadModal = create<PreviewUploadModal>((set) => ({
   fileUrl: undefined,
   setFileURL: (url) => set({ fileUrl: url }),
   resetFileURL: () => set({ fileUrl: undefined }),
+  isLoading: true,
+  setIsLoading: (isLoading) => set({ isLoading }),
 }));
 
 export default usePreviewUploadModal;

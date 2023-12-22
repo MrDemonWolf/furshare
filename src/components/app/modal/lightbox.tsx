@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import copy from "copy-to-clipboard";
@@ -9,9 +9,8 @@ import usePreviewUploadModal from "~/hooks/usePreviewUploadModal";
 import { LoadingSpinner } from "~/components/global/loading";
 
 export default function Lightbox() {
-  const { onClose, isOpen, fileUrl } = usePreviewUploadModal();
-
-  const [isLoading, setLoading] = useState(true);
+  const { onClose, isOpen, fileUrl, isLoading, setIsLoading } =
+    usePreviewUploadModal();
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -64,7 +63,6 @@ export default function Lightbox() {
                           <LoadingSpinner size={64} />
                         </div>
                       )}
-                      {isLoading}
                       <Image
                         src={fileUrl ?? "/images/placeholder.png"}
                         width={400}
@@ -74,7 +72,7 @@ export default function Lightbox() {
                                       33vw"
                         style={{ height: "100%", width: "100%" }}
                         alt="Uploaded image"
-                        onLoad={() => setLoading(false)}
+                        onLoad={() => setIsLoading(false)}
                       />
                     </div>
                   </div>

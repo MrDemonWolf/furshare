@@ -47,6 +47,16 @@ export default function UserActionLog() {
                           />
                         </span>
                       )}
+                      {action.type === ActionLogType.UPLOAD_DELETED && (
+                        <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-red-400 align-middle ring-8 ring-gray-200 dark:text-white">
+                          <ArrowUpTrayIcon
+                            className="text-gray-900"
+                            width={12}
+                            height={12}
+                            aria-hidden="true"
+                          />
+                        </span>
+                      )}
                       {action.type ===
                         ActionLogType.INTERGATION_TOKEN_CREATED && (
                         <span className="mt-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-400 align-middle ring-8 ring-gray-200 dark:text-white">
