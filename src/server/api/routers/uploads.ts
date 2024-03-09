@@ -61,86 +61,86 @@ export const uploadsRouter = createTRPCRouter({
       total: uploadsCount,
     };
   }),
-  remove: privateProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { id } = input;
+  // remove: privateProcedure
+  //   .input(
+  //     z.object({
+  //       id: z.string(),
+  //     }),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const { id } = input;
 
-      const upload = await ctx.db.upload.findUnique({
-        where: {
-          id,
-        },
-      });
+  //     const upload = await ctx.db.upload.findUnique({
+  //       where: {
+  //         id,
+  //       },
+  //     });
 
-      if (!upload) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Upload not found",
-        });
-      }
+  //     if (!upload) {
+  //       throw new TRPCError({
+  //         code: "NOT_FOUND",
+  //         message: "Upload not found",
+  //       });
+  //     }
 
-      if (upload.uploaderId !== ctx.userId) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Unauthorized",
-        });
-      }
+  //     if (upload.uploaderId !== ctx.userId) {
+  //       throw new TRPCError({
+  //         code: "UNAUTHORIZED",
+  //         message: "Unauthorized",
+  //       });
+  //     }
 
-      /**
-       * Set the command to delete the file from S3
-       */
-      try {
-        const destroyCommand = new DeleteObjectsCommand({
-          Bucket: env.S3_BUCKET,
-          Delete: {
-            Objects: [
-              {
-                Key: upload.fileName,
-              },
-            ],
-          },
-        });
+  //     /**
+  //      * Set the command to delete the file from S3
+  //      */
+  //     try {
+  //       const destroyCommand = new DeleteObjectsCommand({
+  //         Bucket: env.S3_BUCKET,
+  //         Delete: {
+  //           Objects: [
+  //             {
+  //               Key: upload.fileName,
+  //             },
+  //           ],
+  //         },
+  //       });
 
-        /**
-         * Delete the file from S3 if the file was not created in the database
-         */
-        await S3.send(destroyCommand);
-      } catch (err) {
-        new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete file from S3",
-        });
-      }
+  //       /**
+  //        * Delete the file from S3 if the file was not created in the database
+  //        */
+  //       await S3.send(destroyCommand);
+  //     } catch (err) {
+  //       new TRPCError({
+  //         code: "INTERNAL_SERVER_ERROR",
+  //         message: "Failed to delete file from S3",
+  //       });
+  //     }
 
-      await ctx.db.upload.update({
-        where: {
-          id,
-        },
-        data: {
-          isDeleted: true,
-        },
-      });
+  //     await ctx.db.upload.update({
+  //       where: {
+  //         id,
+  //       },
+  //       data: {
+  //         isDeleted: true,
+  //       },
+  //     });
 
-      await ctx.db.upload.delete({
-        where: {
-          id,
-        },
-      });
+  //     await ctx.db.upload.delete({
+  //       where: {
+  //         id,
+  //       },
+  //     });
 
-      await ctx.db.actionLog.create({
-        data: {
-          type: ActionLogType.UPLOAD_DELETED,
-          description: "File has been deleted",
-          userId: ctx.userId,
-        },
-      });
+  //     await ctx.db.actionLog.create({
+  //       data: {
+  //         type: ActionLogType.UPLOAD_DELETED,
+  //         description: "File has been deleted",
+  //         userId: ctx.userId,
+  //       },
+  //     });
 
-      return {
-        message: "Token revoked",
-      };
-    }),
+  //     return {
+  //       message: "Token revoked",
+  //     };
+  //   }),
 });
