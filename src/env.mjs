@@ -73,6 +73,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_APP_SIGNUPS_ENABLED:
       process.env.NEXT_PUBLIC_APP_SIGNUPS_ENABLED,
+    JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_APP_SHOW_GITUHB_LINK:
       process.env.NEXT_PUBLIC_APP_SHOW_GITUHB_LINK,
     NEXT_PUBLIC_APP_FOOTER_COPYRIGHT_COMPANY_LINK:
@@ -85,7 +86,7 @@ export const env = createEnv({
     S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
     S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
     BUCKET_PUBLIC_URL: process.env.BUCKET_PUBLIC_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
+
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
