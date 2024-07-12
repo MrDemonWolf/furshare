@@ -2,9 +2,6 @@
     <img src="logo.png"/>
 </p>
 
-![GitHub release](https://img.shields.io/github/release/mrdemonwolf/share.svg?style=for-the-badge)
-[![GitHub last commit](https://img.shields.io/github/last-commit/mrdemonwolf/share.svg?logo=git&style=for-the-badge)](https://github.com/mrdemonwolf/share)
-
 # What is FurShare?
 
 FurShare is a powerful open-source application built on Node.js, MongoDB, and Express that empowers users to effortlessly upload, manage, and share files, images, and text. With built-in moderation tools, it ensures a safe and pleasant experience for all users.
@@ -60,8 +57,12 @@ Want to contribute? Check out our [Code of Conduct]() and [Contributing]() docs.
 
 ![GitHub license](https://img.shields.io/github/license/MrDemonWolf/share.svg?style=for-the-badge&logo=github)
 
-## Let's get connected
+## Contact
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/MrDemonWolf.svg?style=for-the-badge&logo=twitter)](https://twitter.com/MrDemonWolf)
-[![GitHub followers](https://img.shields.io/github/followers/nathanhenniges.svg?label=Follow&style=for-the-badge&logo=github)](https://github.com/nathanhenniges/)
-[![Instagram](https://img.shields.io/static/v1.svg?label=follow&message=@MrDemonWolf&color=grey&logo=instagram&style=for-the-badge&logoColor=white&colorA=critical)](https://www.instagram.com/MrDemonWolf/)
+If you have any questions, suggestions, or feedback, feel free to reach out to us!
+
+- Discord: [Join our server](https://mrdwolf.com/discord)
+
+Thank you for choosing MrDemonWolf Help Desk to enhance your customer support!
+
+Made with ❤️ by [MrDemonWolf, Inc.](https://www.mrdemonwolf.com)
